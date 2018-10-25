@@ -1,7 +1,6 @@
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,7 +10,7 @@ public class BaseRunner {
 
     @Before
     public void setUp() {
-        driver = BrowseFactory.firefox.create();
+        driver = BrowseFactory.chrome.create();
         driver.manage().window().maximize();
         baseUrl = "https://moscow-job.tinkoff.ru/";
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
