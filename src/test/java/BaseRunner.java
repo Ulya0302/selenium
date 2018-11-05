@@ -1,21 +1,20 @@
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.opera.OperaDriver;
 
 import java.util.concurrent.TimeUnit;
 
 public class BaseRunner {
     WebDriver driver;
     String baseUrl;
-    String browserName;
 
     @Before
     public void setUp() {
         driver = getDriver();
         driver.manage().window().maximize();
         baseUrl = "https://moscow-job.tinkoff.ru/";
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+
     }
 
     @After
@@ -24,6 +23,7 @@ public class BaseRunner {
     }
 
     private WebDriver getDriver() {
+        String browserName;
         try {
             browserName = System.getProperty("browser");
             BrowseFactory.valueOf(browserName);
