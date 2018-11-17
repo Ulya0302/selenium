@@ -26,6 +26,7 @@ public class TinkoffJobPage extends Page {
 
     public void clickOnFreeSpace() {
         driver.findElement(By.xpath("//div[contains(@class,'Header__centered')]")).click();
+        logger.info("Нажатие на пустое место формы");
 
     }
 
@@ -33,6 +34,7 @@ public class TinkoffJobPage extends Page {
         By item = By.xpath(String.format("//input[@name='%s']", nameField));
         wait.until( d-> {
             driver.findElement(item).click();
+            logger.info("Нажатие на '" + nameField + "'");
             return true;
         });
     }
@@ -41,14 +43,17 @@ public class TinkoffJobPage extends Page {
         By item = By.xpath("//div[contains(@class, 'SelectItem') and text()='Выберите вакансию']");
         wait.until( d-> {
             driver.findElement(item).click();
+            logger.info("Нажатие на поле 'Вакансия'");
             return true;
         });
     }
 
     public void sendStringInFieldByName(String nameField, String message) {
+        logger.info("Отправка '" + message + "' в поле '" + nameField + "'....");
         By item = By.xpath(String.format("//input[@name='%s']", nameField));
         wait.until( d-> {
             driver.findElement(item).sendKeys(message);
+            logger.info("Сообщение '" + message + "' успешно отправлено в поле '" + nameField + "'");
             return true;
         });
     }
@@ -57,6 +62,7 @@ public class TinkoffJobPage extends Page {
         By item = By.xpath(String.format("//div[contains(@class, 'SelectItem') and contains(text(),'%s')]", text));
         wait.until( d-> {
             driver.findElement(item).click();
+            logger.info("В поле 'Вакансия' выбрано " + driver.findElement(item).getText());
             return true;
         });
     }
@@ -68,24 +74,25 @@ public class TinkoffJobPage extends Page {
          * У которого в потомках имеется что-то, чье имя содержит искомое поле (fio, city...)
          * И после этого находит элемент веб-страницы, связанный с ошибкой
          */
-
+        logger.info("Проверка наличия ошибки '" + errorMessage + "' у поля '" + nameField + "'....");
         String path = String.format(
-                "//div[contains(@class,'Row') and count(descendant::node()[contains(@name,'%s')])>0]" +
+                "//div[contains(@class,'Row') and descendant::node()[contains(@name,'%s')]]" +
                         "//div[contains(@class, 'Error')]",
                 nameField
         );
         By items = By.xpath(path);
-        List<WebElement> listElemets = driver.findElements(items);
-        wait.until(d -> listElemets.size()>0);
-        if (listElemets.size() == 1)
-            return listElemets.get(0).getText().equals(errorMessage) ;
-        else
-            return listElemets.get(0).getText().equals(errorMessage)
-                    || listElemets.get(1).getText().equals(errorMessage);
+        List<WebElement> listElements = driver.findElements(items);
+        wait.until(d -> listElements.size()>0);
+        if (listElements.size() == 1) {
+            return listElements.get(0).getText().equals(errorMessage) ;
+        } else
+            return listElements.get(0).getText().equals(errorMessage)
+                    || listElements.get(1).getText().equals(errorMessage);
     }
 
     public boolean checkErrorMessageInVacancy(String errorMessage) {
-        String path = "//div[contains(@class,'Row') and count(descendant::node()[contains(@class,'Select')])>0]" +
+        logger.info("Проверка наличия ошибки '" + errorMessage + "' у поля 'Вакансия'....");
+        String path = "//div[contains(@class,'Row') and descendant::node()[contains(@class,'Select')]]" +
                 "//div[contains(@class, 'Error')]";
         By item = By.xpath(path);
         wait.until( d-> {

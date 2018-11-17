@@ -23,16 +23,18 @@ public class GoogleMainPage extends Page {
     public void open() {
         driver.navigate().to("https://www.google.ru/");
         isLoaded("Google");
+
     }
 
     public void changeTabWithSearch(String request) {
+        logger.info("Отправляем '" + request + "' в поиск google....");
         searchField.sendKeys(request);
         wait
             .ignoring(StaleElementReferenceException.class)
             .withMessage("Something wrongs...")
             .pollingEvery(Duration.ofSeconds(5))
             .until(d ->{
-                By listItems = By.xpath("//li[@role='presentation']//div[@class='sbqs_c']");
+                By listItems = By.xpath("//li[@role='presentation']//span");
                 List<WebElement> elements = driver.findElements(listItems);
                 for (WebElement el : elements) {
                     if (el.getText().equals(request.toLowerCase()))
@@ -41,5 +43,6 @@ public class GoogleMainPage extends Page {
                 }
                 return isLoaded(request + " - Поиск в Google");
             });
+        logger.info("Запрос '" + request + "' выполнен успешно");
     }
 }

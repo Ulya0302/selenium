@@ -8,19 +8,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
-public class TinkoffTarifsPage extends Page {
-    public TinkoffTarifsPage(WebDriver driver) {
+public class TinkoffTariffsPage extends Page {
+    public TinkoffTariffsPage(WebDriver driver) {
         super(driver);
         PageFactory.initElements(driver, this);
     }
 
     public void open() {
-        driver.get("https://www.tinkoff.ru/mobile-operator/tariffs/");
+        driver.navigate().to("https://www.tinkoff.ru/mobile-operator/tariffs/");
         isLoaded("Тарифы Тинькофф Мобайл");
     }
 
     public void changeRegion(String city) {
         WebElement el;
+        logger.info("Меняем регион на " + city + "....");
         List<WebElement> elements = driver.findElements(By.xpath("//span[contains(@class, 'regionName')]"));
         if (elements.size() > 0) {
             el = elements.get(0);
@@ -37,12 +38,9 @@ public class TinkoffTarifsPage extends Page {
     }
 
     public boolean checkRegion(String city) {
+        logger.info("Сравниваем текущий регион с " + city + ".....");
         WebElement el = driver.findElement(By.xpath("//div[contains(@class, 'MvnoRegionConfirmation__title')]"));
-        if (el.getText().contains(city)) {
-            return true;
-        } else {
-            return false;
-        }
+        return el.getText().contains(city);
     }
 
     public String getCost() {
@@ -51,8 +49,7 @@ public class TinkoffTarifsPage extends Page {
     }
 
     public void setMaximum() {
-        //Select.driver = driver;
-        //CheckBox.driver = driver;
+        logger.info("Устанавливаем максимальные значения в форме...");
         Select selectInternet = new Select("Интернет");
         Select selectCalls = new Select("Звонки");
         selectCalls.setValue(-1);
@@ -61,11 +58,11 @@ public class TinkoffTarifsPage extends Page {
         CheckBox boxSMS = new CheckBox("SMS");
         boxModem.setActive(true);
         boxSMS.setActive(true);
+        logger.info("Все значения в форме были установлены на максимальные");
     }
 
     public void setMinimum() {
-        //Select.driver = driver;
-        //CheckBox.driver = driver;
+        logger.info("Устанавливаем минимальные значения в форме...");
         Select selectInternet = new Select("Интернет");
         Select selectCalls = new Select("Звонки");
         selectCalls.setValue(0);
@@ -74,6 +71,7 @@ public class TinkoffTarifsPage extends Page {
         CheckBox boxSocialNets = new CheckBox("Социальные сети");
         boxMes.setActive(false);
         boxSocialNets.setActive(false);
+        logger.info("Все значения в форме были установлены на минимальные");
     }
 
     public boolean isActiveSendButton() {
@@ -82,17 +80,18 @@ public class TinkoffTarifsPage extends Page {
     }
 
     private class Select {
-        //public  WebDriver driver = null;
         private WebElement field;
-        private String xpathToField, xpathToDrop;
+        private String xpathToField, xpathToDrop, name;
 
         public Select(String name) {
+            logger.info("Инициализация выпадающего списка '" + name + "'....");
+            this.name = name;
             xpathToField = "//span[contains(text(),'" + name + "')]/../div/span";
-//span[contains(@class, 'select__value') and //*[contains(text(),'')]]
             xpathToDrop = "//span[contains(text(),'" + name + "')]/ancestor::div[contains(@class, 'drop')]" +
                     "//span[contains(@class, 'drop')]";
             field = driver
                     .findElement(By.xpath(xpathToField + "[1]"));
+            logger.info("Инициализация выпадающего списка '" + name + "' прошла успешно");
         }
 
         public String getCurText() {
@@ -110,14 +109,16 @@ public class TinkoffTarifsPage extends Page {
             /**
              * Введите -1, чтобы получить последний элемент
              */
+            logger.info(String.format("Устанавливаем значение с индексом %d в поле %s...", index, name));
             field.click();
             List<WebElement> elements = driver.findElements(By.xpath(xpathToDrop));
             int curInd = (index + elements.size()) % elements.size();
             elements.get(curInd).click();
-
+            logger.info(String.format("Значение с индексом %d в поле %s успешно установлено", index, name));
         }
 
         public void setValue(String name) {
+            logger.info(String.format("Устанавливаем значение %s в поле %s...", name, getCurText()));
             field.click();
             WebElement element = driver.findElement(
                     By.xpath(xpathToDrop.replace(
@@ -125,38 +126,46 @@ public class TinkoffTarifsPage extends Page {
                             "//span[contains(@class, 'drop') and contains(text(),'" + name + "')]"))
             );
             element.click();
+            String.format("Значение %s в поле %s успешно установлено", name, getCurText());
+
         }
     }
 
     private class CheckBox {
-        //public static WebDriver driver = null;
         private WebElement box;
         private String text;
         private String xpath;
 
         public CheckBox(String name) {
+            logger.info("Инициализация CheckBox'а '" + name + "'....");
             xpath = "//span[contains(text(), '" + name + "') and contains(@class, 'checkbox')]/..";
             text = driver
                     .findElement(By.xpath(xpath + "/span"))
                     .getText();
             box = driver
                     .findElement(By.xpath(xpath + "/div"));
+            logger.info("Инициализация CheckBox'а '" + name + "' успешно завершена");
         }
 
         public void setActive(boolean flag) {
+            logger.info(String.format("Установка активности '%s' на %s....", getBoxText(), flag));
             WebElement element;
             element = driver.findElement(By.xpath(xpath));
             if (element.getAttribute("class").contains("ui-checkbox  ui-checkbox_checked")) {
-                if (flag)
-                    System.out.println("Button is active already");
-                else
+                if (flag) {
+                    logger.info("Кнопка уже активна");
+                    return;
+                } else
                     box.click();
             } else {
                 if (flag)
                     box.click();
-                else
-                    System.out.println("Button is inactive already");
+                else {
+                    logger.info("Кнопка уже неактивна");
+                    return;
+                }
             }
+            logger.info(String.format("Активность '%s' успешна установлена на %s", getBoxText(), flag));
         }
 
         public String getBoxText() {
@@ -182,12 +191,15 @@ public class TinkoffTarifsPage extends Page {
         private String xpath, text;
 
         public Button(String name) {
+            logger.info("Инициализация кнопки '" + name + "'....");
             xpath = "//button//div[contains(text(),'"+name+"')]";
             button = driver.findElement(By.xpath(xpath+"/../.."));
             text = driver.findElement(By.xpath(xpath)).getText();
+            logger.info("Инициализация кнопки '" + name + "' произошла успешна");
         }
 
         public boolean isActive() {
+            logger.info("Проверяем активности кнопки '" + getButtonText() + "'....");
             List<WebElement> elements;
             elements = driver.findElements(By.xpath(xpath+"//ancestor::button[@disabled]"));
             return elements.isEmpty();
@@ -198,6 +210,7 @@ public class TinkoffTarifsPage extends Page {
         }
 
         public void click() {
+            logger.info("Нажимаем на кнопку " + getButtonText() + "....");
             button.click();
         }
     }
@@ -217,7 +230,9 @@ public class TinkoffTarifsPage extends Page {
         }
 
         public void fill(String message) {
+            logger.info("Отправка " + message + "в" + field.getText() + "....");
             field.sendKeys(message);
+            logger.info(message + "успешно отправлено в" + field.getText());
         }
 
         public String getNameField() {
@@ -225,11 +240,13 @@ public class TinkoffTarifsPage extends Page {
         }
 
         public boolean isEmpty() {
+            logger.info("Проверяем на заполненность " + getNameField() + "...");
             String curString = field.getAttribute("value");
             return curString.equals("+7(") || curString.equals("");
         }
 
         public String getValue() {
+            logger.info("Получаем содержание в " + getNameField() + "...");
             return field.getAttribute("value");
         }
     }
