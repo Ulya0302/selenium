@@ -1,12 +1,10 @@
 package pages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
-import java.security.Key;
 import java.util.List;
 
 public class GoogleResultPage extends Page {
@@ -21,7 +19,6 @@ public class GoogleResultPage extends Page {
         List<WebElement> elementList = driver.findElements(listItems);
         wait.until(d -> elementList.size() > 0);
         elementList.get(0).click();
-
-        logger.info("Успешный переход по '" + elementList.get(0).getText() + "'. Текущая вкладка была закрыта.");
+        logger.info("Вкладка '" + elementList.get(0).getText() + "' была открыта");
     }
 }

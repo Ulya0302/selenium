@@ -43,17 +43,14 @@ public class Page {
         });
     }
 
-    public void switchToTabByHandle(String handle) {
-        driver.switchTo().window(handle);
-    }
-
     public void goToUrl(String url) {
         driver.navigate().to(url);
     }
 
     public void closeCurTab() {
+        String s = driver.getTitle();
         driver.close();
-        logger.info("Вкладка '"+ driver.getTitle() + "' закрыта");
+        logger.info("Вкладка '" + s + "' закрыта");
     }
 
     public boolean checkURL(String url) {

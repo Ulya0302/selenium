@@ -36,28 +36,11 @@ public class BrowserFactory {
             logger.info("Обновление страницы: '" + driver.getTitle() + "'");
         }
 
-        /*
-        @Override
-        public void afterGetText(WebElement element, WebDriver driver, String text) {
-            logger.info("Получен '" + text + "' из " + element.getText());
-        }
-        */
-
         @Override
         public void afterSwitchToWindow(String windowName, WebDriver driver) {
             logger.info("Переход к вкладке: '" + driver.getTitle() + "'");
         }
-        /*
-        @Override
-        public void beforeFindBy(By by, WebElement element, WebDriver driver) {
-            logger.info("Обращение к элементу " + by);
-        }
 
-        @Override
-        public void afterFindBy(By by, WebElement element, WebDriver driver) {
-            logger.info("Найден элемент " + by);
-        }
-            */
         @Override
         public void onException(Throwable throwable, WebDriver driver) {
             File tmp = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
